@@ -54,4 +54,20 @@ class Frame
 
         return !is_null($this->firstThrowResult) && !is_null($this->secondThrowResult);
     }
+
+    /**
+     * @return list<ThrowResult>
+     */
+    public function listThrowResults(): array
+    {
+        if (is_null($this->firstThrowResult)) {
+            return [];
+        }
+
+        if (is_null($this->secondThrowResult)) {
+            return [$this->firstThrowResult];
+        }
+
+        return [$this->firstThrowResult, $this->secondThrowResult];
+    }
 }

@@ -57,4 +57,19 @@ class Game
 
         $this->frames[$currentFrameIndex]->addThrowResultPins($pins);
     }
+
+    /**
+     * @return list<ThrowResult>
+     */
+    public function listThrowResults(): array
+    {
+        /** @var list<ThrowResult> $results */
+        $results = [];
+        foreach ($this->frames as $frame) {
+            assert($frame instanceof Frame);
+            $results = array_merge($results, $frame->listThrowResults());
+        }
+
+        return $results;
+    }
 }

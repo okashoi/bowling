@@ -96,4 +96,24 @@ class FinalFrame extends Frame
     {
         return $this->isFinished;
     }
+
+    /**
+     * @return list<ThrowResult>
+     */
+    public function listThrowResults(): array
+    {
+        if (is_null($this->firstThrowResult)) {
+            return [];
+        }
+
+        if (is_null($this->secondThrowResult)) {
+            return [$this->firstThrowResult];
+        }
+
+        if (is_null($this->thirdThrowResult)) {
+            return [$this->firstThrowResult, $this->secondThrowResult];
+        }
+
+        return [$this->firstThrowResult, $this->secondThrowResult, $this->thirdThrowResult];
+    }
 }
