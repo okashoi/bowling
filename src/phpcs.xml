@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="Custom standard">
+    <description>Custom coding standard</description>
+
+    <!-- display progress -->
+    <arg value="p"/>
+    <!-- use colors in output -->
+    <arg name="colors"/>
+
+    <!-- inherit rules from: -->
+    <rule ref="PSR12">
+        <exclude name="PSR1.Methods.CamelCapsMethodName" />
+        <exclude name="Squiz.Classes.ValidClassName" />
+        <exclude name="Generic.Files.LineLength"/>
+    </rule>
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+
+    <!-- Paths to check -->
+    <file>src</file>
+    <file>tests</file>
+</ruleset>
