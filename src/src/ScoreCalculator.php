@@ -13,12 +13,18 @@ class ScoreCalculator
         $throwResults = $game->listThrowResults();
         $score = 0;
         for ($i = 0; $i < count($throwResults); $i++) {
-            if ($i === 0) {
-                $score += $this->calculateNewlyFixedScoreFromThreeThrowResults($zeroResult, $zeroResult, $throwResults[$i]);
-            } elseif ($i === 1) {
-                $score += $this->calculateNewlyFixedScoreFromThreeThrowResults($zeroResult, $throwResults[$i - 1], $throwResults[$i]);
-            } else {
-                $score += $this->calculateNewlyFixedScoreFromThreeThrowResults($throwResults[$i - 2], $throwResults[$i - 1], $throwResults[$i]);
+            $score += $this->calculateOneThrowScore(
+                $throwResults[$i],
+                $throwResults[$i + 1] ?? $zeroResult,
+                $throwResults[$i + 2] ?? $zeroResult
+            );
+
+            if ($i === count($throwResults) - 3 && $throwResults[$i]->type === ThrowResultType::Strike) {
+                break;
+            }
+
+            if ($i === count($throwResults) - 2 && $throwResults[$i]->type === ThrowResultType::Spare) {
+                break;
             }
         }
 
@@ -26,35 +32,19 @@ class ScoreCalculator
     }
 
     /**
-     * 連続する 3 投の結果から、「新たに確定したスコア」を算出する
+     * 連続する 3 投の結果から、最初の投球のスコアを算出する
      *
-     * @param ThrowResult $n0 2 つ前の投球結果
-     * @param ThrowResult $n1 1 つ前の投球結果
-     * @param ThrowResult $n2 投球結果
+     * @param ThrowResult $n0 投球結果
+     * @param ThrowResult $n1 1 つ後ろの投球結果
+     * @param ThrowResult $n2 2 つ後ろの投球結果
      * @return int 新たに確定したスコア
      */
-    private function calculateNewlyFixedScoreFromThreeThrowResults(ThrowResult $n0, ThrowResult $n1, ThrowResult $n2): int
+    private function calculateOneThrowScore(ThrowResult $n0, ThrowResult $n1, ThrowResult $n2): int
     {
-        $score = 0;
-        $score += match ($n0->type) {
+        return match ($n0->type) {
             ThrowResultType::Strike => $n0->pins + $n1->pins + $n2->pins,
-            // ストライク以外で 2 つ前の投球結果は影響しないので 0
-            default => 0,
+            ThrowResultType::Spare => $n0->pins + $n1->pins,
+            ThrowResultType::None => $n0->pins,
         };
-
-        $score += match ($n1->type) {
-            ThrowResultType::Spare => $n1->pins + $n2->pins,
-            // ストライクの場合は次の 1 投の結果がわかるまではスコアは確定できず、
-            // ストライクでもスペアでもない場合は 1 つ前の投球結果は影響しないので 0
-            default => 0,
-        };
-
-        $score += match ($n2->type) {
-            ThrowResultType::None => $n2->pins,
-            // ストライクにせよスペアにせよ次の 1～2 投の結果がわかるまではスコアは確定できないので 0
-            default => 0,
-        };
-
-        return $score;
     }
 }
